@@ -4,11 +4,11 @@
 @author: Sonya
 """
 
-
+import matplotlib.pyplot as plt
 import requests as req  # For HTTP requests
 from bs4 import BeautifulSoup  # For data scrapping
 import networkx as nx  # GraphML
-
+import argparse  # CLI
 
 # DEFAULT settings
 DEFAULT_URL = 'https://github.com/'
@@ -61,29 +61,48 @@ def parse_url(username=DEFAULT_USERNAME):
         follower_username = follower['href'].lstrip('/')
         followers_list.append(dict([('Username', follower_username),
                                     ('Name', follower_name)]))
-        print(follower_name+'\t'+follower_username)
+        print(follower_name + '\t' + follower_username + '\r')
     pass
     return name, followers_list
 
 
 def main():
-    print('Github parsing script')
-    username = input('Enter github account username:\t')
-    num = input('Number of iterations:\t')
-    if username != "":
-        if num != "":
-            g = get_followers_graph(username, int(num))
+    parser = argparse.ArgumentParser(description='Github parsing script')
+    parser.add_argument('--USERNAME',
+                        help=f'GitHub account username \
+                        (type:str, default:{DEFAULT_USERNAME})',
+                        default=DEFAULT_USERNAME,
+                        type=str
+                        )
+    parser.add_argument('--DEEP',
+                        help=f'Search deep (type:int, default:{DEEP})',
+                        default=DEEP,
+                        type=int
+                        )
+    args = parser.parse_args()
+    if args.USERNAME != "":
+        if args.DEEP != "":
+            g = get_followers_graph(args.USERNAME, args.DEEP)
         else:
-            g = get_followers_graph(username, DEEP)
+            g = get_followers_graph(deep=args.DEEP)
     else:
-        username = DEFAULT_USERNAME
         g = get_followers_graph()
     pos = nx.spring_layout(g)  # Drawing graph
-    nx.draw_networkx_nodes(g, pos)  # Drawing graph's nodes
-    nx.draw_networkx_labels(g, pos)  # Drawing graph's labeles
+    nx.draw_networkx_nodes(g, pos,
+                           node_color='lime',
+                           node_size = 250,
+                           alpha = 0.6
+                           )  # Drawing graph"s nodes
+    nx.draw_networkx_labels(g, pos,
+                            font_size=10,
+                            font_color='magenta'
+                            ) # Drawing graph's labeles
     nx.draw_networkx_edges(g, pos, edgelist=g.edges,
                            arrows=True)  # Drawing arrows for edges
-    nx.write_graphml(g, f'{username}_graph')  # Saving graph
+    nx.write_graphml(g, f'{args.USERNAME}_graph')  # Saving graph
+    plt.draw()
+    plt.title(f'{args.USERNAME} followers graph')
+    plt.show()
     return
 
 
