@@ -90,13 +90,13 @@ def main():
     pos = nx.spring_layout(g)  # Drawing graph
     nx.draw_networkx_nodes(g, pos,
                            node_color='lime',
-                           node_size = 250,
-                           alpha = 0.6
-                           )  # Drawing graph"s nodes
+                           node_size=250,
+                           alpha=0.6
+                           )  # Drawing graph's nodes
     nx.draw_networkx_labels(g, pos,
                             font_size=10,
                             font_color='magenta'
-                            ) # Drawing graph's labeles
+                            )  # Drawing graph's labeles
     nx.draw_networkx_edges(g, pos, edgelist=g.edges,
                            arrows=True)  # Drawing arrows for edges
     nx.write_graphml(g, f'{args.USERNAME}_graph')  # Saving graph
